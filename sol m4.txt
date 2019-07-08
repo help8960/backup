@@ -1,0 +1,340 @@
+ vf page
+
+
+
+
+
+ <apex:page StandardController="Case" >
+
+
+
+  <apex:form >
+
+
+
+ <apex:pageBlock title="Case Information">
+
+
+
+
+
+
+
+   <apex:pageBlockSection columns="2" >
+
+
+
+   <apex:outputField value="{!case.OwnerId}"/>
+
+
+
+   <apex:inputField value="{!case.ContactId}"/>
+
+
+
+   <apex:inputField value="{!case.accountid}"/>
+
+
+
+    <apex:inputField value="{!case.Status}"/>
+
+
+
+    <apex:inputField value="{!case.Priority}"/>
+
+
+
+    <apex:inputField value="{!case.Origin}"/>
+
+
+
+   </apex:pageBlockSection>
+
+
+
+
+
+
+
+   <div align="center">
+
+
+
+   <apex:commandButton value="save" action="{!save}"/>
+
+
+
+  </div>
+
+
+
+
+
+
+
+ </apex:pageBlock>
+
+
+
+ </apex:form>
+
+
+
+</apex:page>
+
+
+
+
+
+
+
+2.	Create Tabbed vfp
+
+
+
+
+
+
+
+<apex:page standardController="Account" tabStyle="account" >
+
+
+
+ <apex:tabPanel switchType="client" selectedTab="tabdetails" id="AccountTabPanel">
+
+
+
+
+
+
+
+  <apex:tab label="Account Details" name="AccDetails" id="tabdetails">
+
+
+
+   <apex:detail relatedList="false" title="true"/>
+
+
+
+  </apex:tab>
+
+
+
+
+
+
+
+  <apex:tab label="Contacts" name="Contacts" id="tabContact">
+
+
+
+   <apex:relatedList subject="{!account}" list="contacts" />
+
+
+
+  </apex:tab>
+
+
+
+
+
+
+
+  <apex:tab label="Opportunities" name="Opportunities" id="tabOpp">
+
+
+
+   <apex:relatedList subject="{!account}" list="opportunities" />
+
+
+
+  </apex:tab>
+
+
+
+
+
+
+
+ </apex:tabPanel>
+
+
+
+</apex:page>
+
+
+
+
+
+
+
+3.	Create a Training App
+
+
+
+a. AddDepartment1 
+
+public class AddDepartment1 {
+
+
+
+  public String department_name{get; set;}
+
+  public String department_location{get; set;}
+
+
+
+  public void doInsert(){
+
+
+
+    Department__c dept = new Department__c();
+
+    dept.APEX_Department_Name__c = department_name;
+
+    dept.APEX_Location__c = department_location;
+
+    insert dept;
+
+
+
+  }
+
+}
+
+
+
+a. vfp
+
+<apex:page controller="AddDepartment1">
+
+
+
+  <apex:form >
+
+  Department Name : <apex:inputText value="{!department_name}"/>
+
+  Department Location : <apex:inputText value="{!department_location}"/>
+
+
+
+   <apex:commandButton value="INSERT" action="{!doInsert}" />
+
+  </apex:form>
+
+
+
+
+
+</apex:page>
+
+
+
+
+
+<apex:page Controller="DisplayAllDept" >
+
+
+
+  <apex:pageBlock title="All Departments list">
+
+   <apex:form >
+
+      <apex:dataTable value="{!AllDept}" var="d">
+
+        <apex:column value="{!d.APEX_Department_Name__c}" />
+
+      </apex:dataTable>
+
+    </apex:form>
+
+  </apex:pageBlock>
+
+
+
+  <apex:pageBlock title="Employees With B and C grade">
+
+   <apex:form >
+
+      <apex:dataTable value="{!Emp3}" var="e">
+
+        <apex:column value="{!e.APEX_First_Name__c}" />
+
+      </apex:dataTable>
+
+    </apex:form>
+
+  </apex:pageBlock>
+
+
+
+  <apex:pageBlock title="LnD Departments">
+
+   <apex:form >
+
+      <apex:dataTable value="{!LnDDept}" var="d2">
+
+        <apex:column value="{!d2.APEX_Department_Name__c}" />
+
+      </apex:dataTable>
+
+    </apex:form>
+
+  </apex:pageBlock>
+
+</apex:page>
+
+
+
+public class DisplayAllDept
+
+{
+
+
+
+   public List<Department__c> getAllDept()
+
+   {
+
+   List<Department__c> dlist = Database.query('SELECT APEX_Department_Name__c, APEX_Location__c FROM Department__c');
+
+   return dlist;
+
+  }
+
+
+
+
+
+   public List<Employee__c> getEmp3()
+
+   {
+
+    String grade1 = 'B%';
+
+   String grade2 = 'C%';
+
+     List<Employee__c> elist = Database.query(' SELECT APEX_First_Name__c, APEX_Last_Name__c, APEX_Grade__c FROM Employee__c WHERE APEX_Grade__c like :grade1 or APEX_Grade__c like :grade2 ');
+
+   return elist;
+
+  }
+
+
+
+   public List<Department__c> getLnDDept()
+
+   {
+
+ String dept='LnD';
+
+   List<Department__c> dlist = Database.query('SELECT APEX_Department_Name__c, APEX_Location__c FROM Department__c Where APEX_Department_Name__c =: dept');
+
+   return dlist;
+
+  }
+
+
+
+}
+
